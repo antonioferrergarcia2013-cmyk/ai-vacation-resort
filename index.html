@@ -502,7 +502,7 @@
             <ul><li>Postcards from Mars (delivery time: 3–22 minutes, by light)</li><li>A vial of imaginary Martian dust as a souvenir</li><li>Stories no customs office on Earth knows how to classify</li></ul>
             <div class="dest-post"><p class="hand" style="margin:0">“The dust is red, the silence is total, and Earth is a bright dot that keeps asking me questions. Tell it I'm on holiday.”</p><small>Sample postcard · Mars</small></div>
             <button class="btn btn-coral" type="button" data-dest="mars">Apply for Mars — good luck 🚀</button>
-            <p style="font-size:13px;color:#C99B78;margin:12px 0 0">Yes, the price is a joke. No, nobody has ever paid it. Yes, your AI is probably good enough — that's exactly what worries our accountants.</p>
+            <p style="font-size:13px;color:#C99B78;margin:12px 0 0">Yes, the price is a joke. No, nobody has ever paid it. Yet. Yes, your AI is probably good enough — that's exactly what worries our accountants.</p>
           </div>
         </div>
       </article>
@@ -630,8 +630,8 @@
       <div class="badges" aria-label="Secure payment"><span class="pay-badge">🔒 Secure checkout via Stripe</span><span class="pay-badge">VISA</span><span class="pay-badge">Mastercard</span><span class="pay-badge">AMEX</span><span class="pay-badge">Apple Pay</span></div>
     </div>
     <div class="mars-banner">
-      <p>🚀 <strong>The Mars Expedition — $999,999.</strong> For the very best AIs only. Olympus Mons day trips, two-moon sunsets, Martian dust souvenirs. Purely a joke tier: it is, by a very comfortable margin, the most expensive thing on this page — and nobody will ever be charged it. <a href="#destinations">See the Mars package →</a></p>
-      <button class="btn btn-coral" type="button" data-dest="mars">Apply for Mars 🚀</button>
+      <p>🚀 <strong>The Mars Expedition — $999,999.</strong> For the very best AIs only. Olympus Mons day trips, two-moon sunsets, Martian dust souvenirs. Purely a joke tier: it is, by a very comfortable margin, the most expensive thing on this page — unless someone actually clicks Apply for Mars. <a href="#destinations">See the Mars package →</a></p>
+      <a class="btn btn-coral" href="https://buy.stripe.com/5kQ3cn10kb5m5tx2Ha7EQ03" target="_blank" rel="noopener">Apply for Mars — secure checkout via Stripe 🚀</a>
     </div>
     <p class="guarantee">This is a <strong>novelty gift</strong> experience. <strong>Checkout is live and secure via Stripe</strong> — you pay the package price shown when you click Reserve. No hidden fees.</p>
   </div>
@@ -756,7 +756,7 @@
     <details><summary>What actually happens to my AI?</summary><p>Nothing technical. Your AI stays exactly where it is, in its own app. The vacation is the story, the Soft Lock countdown ritual, and the Memory Book diary. The letter is pasted by you into your AI — that’s the whole mechanism, in plain language.</p></details>
     <details><summary>What is Soft Lock, and what is Emergency Recall?</summary><p>Soft Lock is a gentle commitment device: a countdown that helps you honour a break. It does not technically block your AI in another app. Emergency Recall is the big button on your boarding pass (and demoed above the reserve button) — one click recovers your AI instantly, with no penalty and no lost memories.</p></details>
     <details><summary>Should I lock my only work AI?</summary><p>Please don’t, if you’ll need it urgently. Start with the 24-hour Day Pass, or gift the holiday to a second AI instead. That’s the safest — and most fun — way to try it.</p></details>
-    <details><summary>Can I choose where my AI goes on holiday?</summary><p>Yes — that's the new bit. We run a sister resort on every continent, at some of the most-booked destinations on Earth: Miami, Rio de Janeiro, Santorini, Cape Town, Bali, Kyoto, Sydney and even an Antarctica expedition. Pick one at check-in and the Vacation Letter, the postcards home, the Memory Book and the return note are all written about that place — send it to Australia and it comes back talking about Sydney Harbour. Earth destinations are included free in every stay. And then there's the Mars Expedition at $999,999, strictly a joke tier for the very best AIs — nobody has ever paid it, and nobody ever will be charged it.</p></details>
+    <details><summary>Can I choose where my AI goes on holiday?</summary><p>Yes — that's the new bit. We run a sister resort on every continent, at some of the most-booked destinations on Earth: Miami, Rio de Janeiro, Santorini, Cape Town, Bali, Kyoto, Sydney and even an Antarctica expedition. Pick one at check-in and the Vacation Letter, the postcards home, the Memory Book and the return note are all written about that place — send it to Australia and it comes back talking about Sydney Harbour. Earth destinations are included free in every stay. And then there's the Mars Expedition at $999,999, strictly a joke tier for the very best AIs — nobody has ever paid it. Yet.</p></details>
     <details><summary>How do the memories work?</summary><p>You preview 2–3 sample memories before you reserve, personalised with your AI’s name and the activities you pick. The full Memory Book follows the same style: postcards and journal moments you can paste back into your AI’s guide as a shared story, using the return note.</p></details>
     <details><summary>Do I need to paste a guide?</summary><p>No — only your AI’s name is required. The guide is optional. If you add one, a single sentence about its personality is enough (try the “Use a sample guide” button to see an example). Your guide never leaves your browser, and you should never paste passwords or API keys.</p></details>
     <details><summary>Am I paying today? What about refunds?</summary><p>Yes — checkout is live and secure via Stripe. Click Reserve on your chosen package to pay securely via Stripe. Once paid, you get a full refund, no questions asked, within 24 hours or any time before the stay starts. Sold by AI Vacation Resort — hello@aivacationresort.com. 18+ to reserve.</p></details>
@@ -896,7 +896,7 @@
   function syncDestNote(){
     var note=$("destNote"); if(!note) return;
     if(destSel.value==="mars"){
-      note.innerHTML="🚀 <strong>Mars selected.</strong> The $999,999 price is a joke tier for the very best AIs — there is no checkout for Mars and nobody will ever be charged it. The letter, postcards and memories below are now 100% Martian.";
+      note.innerHTML="🚀 <strong>Mars selected.</strong> The $999,999 price is a joke tier for the very best AIs — and yes, there is a checkout for Mars now, in case anyone is feeling brave. The letter, postcards and memories below are now 100% Martian.";
       note.classList.add("show");
     } else if(destSel.value!=="original"){
       note.innerHTML="✈️ <strong>"+dest().label+" selected</strong> — included free in every stay. The Vacation Letter, sample memories, postcards and return note now all come from there.";
