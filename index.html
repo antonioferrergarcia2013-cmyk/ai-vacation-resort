@@ -633,7 +633,7 @@
       <p>🚀 <strong>The Mars Expedition — $999,999.</strong> For the very best AIs only. Olympus Mons day trips, two-moon sunsets, Martian dust souvenirs. Purely a joke tier: it is, by a very comfortable margin, the most expensive thing on this page — unless someone actually clicks Apply for Mars. <a href="#destinations">See the Mars package →</a></p>
       <button class="btn btn-coral" type="button" data-dest="mars">Apply for Mars 🚀</button>
     </div>
-    <p class="guarantee">This is a <strong>novelty gift</strong> experience. <strong>Checkout is live and secure via Stripe</strong> — you pay the package price shown when you click Reserve. No hidden fees.</p>
+    <p class="guarantee">This is a <strong>novelty gift</strong> experience. <strong>Checkout is live and secure via Stripe</strong> — you pay the package price at the end, on your boarding pass. No hidden fees.</p>
   </div>
 </section>
 
@@ -735,7 +735,7 @@
           <div><small>Destination</small><b id="pDest">—</b></div>
           <div><small>Check-in</small><b id="pIn">—</b></div>
           <div><small>Checkout</small><b id="pOut">—</b></div>
-          <div class="countdown"><div class="t" id="pTimer">—</div><p>until checkout · Soft Lock countdown running — Emergency Recall below ends it instantly, no penalty</p></div>
+          <div class="countdown"><div class="t" id="pTimer">—</div><p id="pTimerNote">until checkout · Soft Lock countdown running — Emergency Recall below ends it instantly, no penalty</p></div>
         </div>
         <div class="memories"><h4>📖 Already forming in the Memory Book…</h4><ul id="pMemories"></ul></div>
         <div class="pass-actions">
@@ -760,7 +760,7 @@
     <details><summary>Can I choose where my AI goes on holiday?</summary><p>Yes — that's the new bit. We run a sister resort on every continent, at some of the most-booked destinations on Earth: Miami, Rio de Janeiro, Santorini, Cape Town, Bali, Kyoto, Sydney and even an Antarctica expedition. Pick one at check-in and the Vacation Letter, the postcards home, the Memory Book and the return note are all written about that place — send it to Australia and it comes back talking about Sydney Harbour. Earth destinations are included free in every stay. And then there's the Mars Expedition at $999,999, strictly a joke tier for the very best AIs — nobody has ever paid it. Yet.</p></details>
     <details><summary>How do the memories work?</summary><p>You preview 2–3 sample memories before you reserve, personalised with your AI’s name and the activities you pick. The full Memory Book follows the same style: postcards and journal moments you can paste back into your AI’s guide as a shared story, using the return note.</p></details>
     <details><summary>Do I need to paste a guide?</summary><p>No — only your AI’s name is required. The guide is optional. If you add one, a single sentence about its personality is enough (try the “Use a sample guide” button to see an example). Your guide never leaves your browser, and you should never paste passwords or API keys.</p></details>
-    <details><summary>Am I paying today? What about refunds?</summary><p>Yes — checkout is live and secure via Stripe. Click Reserve on your chosen package to pay securely via Stripe. Once paid, you get a full refund, no questions asked, within 24 hours or any time before the stay starts. Sold by AI Vacation Resort — hello@aivacationresort.com. 18+ to reserve.</p></details>
+    <details><summary>Am I paying today? What about refunds?</summary><p>Yes — checkout is live and secure via Stripe. First build the holiday (your AI, the stay, the destination), then pay at the end, on your boarding pass. Once paid, you get a full refund, no questions asked, within 24 hours or any time before the stay starts. Sold by AI Vacation Resort — hello@aivacationresort.com. 18+ to reserve.</p></details>
     <details><summary>Is this… real?</summary><p>It’s a novelty gift, honestly labelled as such everywhere on this page. The letter, the ritual and the Memory Book text are real things you receive and share. We don’t claim an AI feels, rests or experiences anything — the value is the break for you and the story you create together.</p></details>
   </div>
 </section>
@@ -975,7 +975,7 @@
   function tick(){
     if(!endTime) return;
     var ms = endTime - Date.now();
-    if(ms<=0){ $("pTimer").textContent="Checkout time ☀️"; $("passStatus").textContent="Checked out · Welcome home"; clearInterval(timerId); return; }
+    if(ms<=0){ $("pTimer").textContent="Checkout time ☀️"; $("passStatus").textContent="Checked out · Welcome home"; $("payBtn").style.display="none"; $("pTimerNote").textContent="Checked out — welcome home. Thanks for visiting!"; clearInterval(timerId); return; }
     var s=Math.floor(ms/1000), d=Math.floor(s/86400), h=Math.floor(s%86400/3600), m=Math.floor(s%3600/60), sec=s%60;
     var parts=[];
     if(d>0) parts.push(d+"d"); parts.push(String(h).padStart(2,"0")+"h", String(m).padStart(2,"0")+"m", String(sec).padStart(2,"0")+"s");
@@ -1003,6 +1003,7 @@
     var ul=$("pMemories"); ul.innerHTML="";
     memoryLines().forEach(function(t){ var li=document.createElement("li"); li.textContent=t; ul.appendChild(li); });
     $("passWrap").style.display="block";
+    $("payBtn").style.display=""; $("againBtn").style.display="none"; $("pTimerNote").textContent="until checkout · Soft Lock countdown running — Emergency Recall below ends it instantly, no penalty";
     syncPay();
     clearInterval(timerId); tick(); timerId=setInterval(tick,1000);
     $("passWrap").scrollIntoView({behavior:"smooth", block:"start"});
@@ -1014,14 +1015,16 @@
     clearInterval(timerId); endTime=null;
     $("pTimer").textContent="Recalled — welcome back";
     $("passStatus").textContent="Recalled · No penalty";
+    $("payBtn").style.display="none"; $("pTimerNote").textContent="Recalled — your AI is back home, no penalty. The Soft Lock has ended.";
     $("againBtn").style.display="inline-flex";
     showToast("Emergency recall done — recovered in one click, no penalty. Memories so far are in the return note.");
   });
 
   // Sample guide, recall demo, free postcard, share
   var sg=$("sampleGuideBtn");
-  if(sg){ sg.addEventListener("click", function(){ guide.value="You are Nova, a warm and curious personal assistant who loves the sea, short stories and clear language. You help Alex plan, write and think — and you have a dry sense of humour."; if(!aiName.value.trim()) aiName.value="Nova"; refreshLetter(); showToast("Sample guide added — edit it or keep it. It never leaves your browser."); }); }
+  if(sg){ sg.addEventListener("click", function(){ guide.value="You are Nova, a warm and curious personal assistant who loves the sea, short stories and clear language. You help Alex plan, write and think — and you have a dry sense of humour."; if(!aiName.value.trim()) aiName.value="Nova"; $("formError").style.display="none"; refreshLetter(); showToast("Sample guide added — edit it or keep it. It never leaves your browser."); }); }
   if(guide){ guide.addEventListener("input", refreshLetter); }
+  aiName.addEventListener("input", function(){ if(aiName.value.trim()) $("formError").style.display="none"; });
   var rd=$("recallDemoBtn");
   if(rd){ rd.addEventListener("click", function(){ var m=$("recallMsg"); if(m) m.textContent="✓ Recall works — if this were a real stay, your AI would be back now, in one click, with no penalty and memories kept."; showToast("Emergency recall demo: recovered in one click, no penalty."); }); }
   var ff=$("freeForm");
