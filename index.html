@@ -895,7 +895,7 @@
   function syncPay(){
     var btn=$("payBtn"); if(!btn) return;
     if(destSel.value==="mars"){ btn.href=PAYLINKS.mars; btn.textContent="Pay $999,999 securely via Stripe — confirm the Mars Expedition 🚀"; }
-    else { var p=plan(); btn.href=PAYLINKS[planSel.value]; btn.textContent="Pay $"+p.price+" securely via Stripe — confirm the "+p.name; }
+    else { var p=plan(); btn.href=PAYLINKS[planSel.value]; btn.textContent="Pay $"+p.price+" securely via Stripe — confirm "+p.name; }
   }
   function syncPlan(fromButton){
     var p=plan();
