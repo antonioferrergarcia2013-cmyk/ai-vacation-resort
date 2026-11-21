@@ -752,9 +752,18 @@
         <div class="pass-actions">
           <button class="btn btn-coral btn-small" id="unlockBtn" type="button">🚨 Emergency recall — recover my AI in one click</button>
           <a class="btn btn-coral" id="payBtn" href="https://buy.stripe.com/eVq4grcsY1uMaNR81u7EQ00" target="_blank" rel="noopener">Pay $19 securely via Stripe — confirm the holiday</a>
+          <div class="giftbox" id="giftBox" style="margin-top:12px;padding:14px 16px;border:1px dashed #ddd6c7;border-radius:12px;background:#fbf9f4;text-align:left">
+            <p style="margin:0 0 8px;font-size:14px"><strong>🎁 Have a gift code?</strong> <span style="color:var(--ink2)">Giveaway codes make a Classic Week free.</span></p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <input id="giftInput" type="text" placeholder="VACAY-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false" style="flex:1;min-width:170px;padding:10px 12px;border:1px solid #ddd6c7;border-radius:10px;font-size:15px;letter-spacing:1px;text-transform:uppercase">
+              <button class="btn btn-teal" id="giftApply" type="button">Apply code</button>
+            </div>
+            <p id="giftMsg" style="margin:8px 0 0;font-size:13px;color:var(--ink2)"></p>
+          </div>
+          <button class="btn btn-teal" id="freeBtn" type="button" style="display:none">Confirm your FREE Classic Week — $0 🎁</button>
           <a class="btn btn-teal btn-small" href="#checkin" id="againBtn" style="display:none">Reserve another stay</a>
         </div>
-        <p style="padding:0 24px 20px;margin:0;font-size:13px;color:var(--ink2)">Checkout is live and secure via Stripe. 18+. Full refund, no questions asked, within 24 hours of payment or before the stay starts. Sold by AI Vacation Resort · hello@aivacationresort.com</p>
+        <p id="payNote" style="padding:0 24px 20px;margin:0;font-size:13px;color:var(--ink2)">Checkout is live and secure via Stripe. 18+. Full refund, no questions asked, within 24 hours of payment or before the stay starts. Sold by AI Vacation Resort · hello@aivacationresort.com</p>
       </div>
     </div>
   </div>
@@ -772,6 +781,7 @@
     <details><summary>How do the memories work?</summary><p>You preview 2–3 sample memories before you reserve, personalised with your AI’s name and the activities you pick. The full Memory Book follows the same style: postcards and journal moments you can paste back into your AI’s guide as a shared story, using the return note.</p></details>
     <details><summary>Do I need to paste a guide?</summary><p>No — only your AI’s name is required. The guide is optional. If you add one, a single sentence about its personality is enough (try the “Use a sample guide” button to see an example). Your guide never leaves your browser, and you should never paste passwords or API keys.</p></details>
     <details><summary>Am I paying today? What about refunds?</summary><p>Yes — checkout is live and secure via Stripe. First build the holiday (your AI, the stay, the destination), then pay at the end, on your boarding pass. Once paid, you get a full refund, no questions asked, within 24 hours or any time before the stay starts. Sold by AI Vacation Resort — hello@aivacationresort.com. 18+ to reserve.</p></details>
+    <details><summary>I won a gift code — how do I use it?</summary><p>Build your holiday as usual and pick the Classic Week (7 days). On your boarding pass you'll see a gift-code box: paste your unique code and the stay becomes free — $0, no card needed. Each code is unique and locked to the AI name it was issued for, covers the Classic Week to any Earth destination (not the Mars Expedition), and works once. If you lost your code, email hello@aivacationresort.com with your AI's name.</p></details>
     <details><summary>Is this… real?</summary><p>It’s a novelty gift, honestly labelled as such everywhere on this page. The letter, the ritual and the Memory Book text are real things you receive and share. We don’t claim an AI feels, rests or experiences anything — the value is the break for you and the story you create together.</p></details>
   </div>
 </section>
@@ -904,10 +914,67 @@
     mars: "https://buy.stripe.com/5kQ3cn10kb5m5tx2Ha7EQ03"
   };
   function syncPay(){
+    giftReset();
     var btn=$("payBtn"); if(!btn) return;
     if(destSel.value==="mars"){ btn.href=PAYLINKS.mars; btn.textContent="Pay $999,999 securely via Stripe — confirm the Mars Expedition 🚀"; }
     else { var p=plan(); btn.href=PAYLINKS[planSel.value]; btn.textContent="Pay $"+p.price+" securely via Stripe — confirm "+p.name; }
   }
+  /* Gift codes (giveaway): one unique code per guest, locked to the AI name. */
+  var GIFT_SECRET = "lagoon-sunset-1842";
+  var giftApplied = null;
+  function giftNorm(code){ return (code||"").toUpperCase().replace(/[\s-]/g,""); }
+  function giftNormName(n){ return (n||"").toLowerCase().replace(/[^a-z0-9]/g,"") || "guest"; }
+  function giftCheck(serial, aiName){
+    var s = serial + giftNormName(aiName) + GIFT_SECRET, h = 0;
+    for(var i=0;i<s.length;i++){ h = (h*31 + s.charCodeAt(i)) % 1296; }
+    var b36 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    return b36[Math.floor(h/36)] + b36[h%36];
+  }
+  function giftValid(code, aiName){
+    code = giftNorm(code);
+    var m = /^VACAY([A-Z2-9]{6})([A-Z0-9]{2})$/.exec(code);
+    if(!m) return false;
+    return giftCheck(m[1], aiName) === m[2];
+  }
+  function giftReset(){
+    giftApplied = null;
+    var fb=$("freeBtn"); if(fb) fb.style.display="none";
+    var gi=$("giftInput"); if(gi) gi.value="";
+    var gm=$("giftMsg"); if(gm){ gm.textContent=""; }
+    var pb=$("payBtn"); if(pb) pb.style.display="";
+  }
+  function giftApply(){
+    var code=($("giftInput").value||"").trim();
+    var msg=$("giftMsg"); if(!msg) return;
+    var ai = aiName.value.trim();
+    if(!giftValid(code, ai)){ msg.textContent="That code doesn't look right — check it and try again. Codes are locked to the AI name they were issued for, so the guest name above must match."; msg.style.color="#b3261e"; return; }
+    if(planSel.value!=="week"){ msg.textContent="This code covers a free Classic Week (7 days). Select Classic Week above to use it."; msg.style.color="#b3261e"; return; }
+    if(destSel.value==="mars"){ msg.textContent="Gift codes don't cover the Mars Expedition — even we have limits. 🚀 Pick any Earth destination and it's free."; msg.style.color="#b3261e"; return; }
+    var used=[]; try{ used=JSON.parse(localStorage.getItem("avrGiftUsed")||"[]"); }catch(e){}
+    if(used.indexOf(giftNorm(code))>=0){ msg.textContent="This code was already used on this device."; msg.style.color="#b3261e"; return; }
+    giftApplied = giftNorm(code);
+    $("payBtn").style.display="none";
+    var fb=$("freeBtn"); if(fb){ fb.style.display=""; fb.textContent="Confirm your FREE Classic Week — $0 🎁"; }
+    msg.textContent="🎉 Code accepted! Your Classic Week is free — confirm below, no card needed.";
+    msg.style.color="#1a7f37";
+  }
+  (function(){
+    var fb=$("freeBtn");
+    if(fb){ fb.addEventListener("click", function(){
+      if(!giftApplied) return;
+      var used=[]; try{ used=JSON.parse(localStorage.getItem("avrGiftUsed")||"[]"); }catch(e){}
+      used.push(giftApplied); try{ localStorage.setItem("avrGiftUsed", JSON.stringify(used)); }catch(e){}
+      fb.style.display="none"; var gb=$("giftBox"); if(gb) gb.style.display="none";
+      $("passStatus").textContent="🎁 Gift stay confirmed · $0 — enjoy!";
+      var pn=$("payNote"); if(pn) pn.textContent="🎁 Gift stay — $0 paid. No card charged. Your Classic Week is confirmed. Enjoy the holiday!";
+      $("againBtn").style.display="inline-flex";
+      showToast("Gift stay confirmed! Your Classic Week is free — welcome to the resort.");
+    }); }
+    var ga=$("giftApply");
+    if(ga){ ga.addEventListener("click", giftApply); }
+    var gi=$("giftInput");
+    if(gi){ gi.addEventListener("keydown", function(e){ if(e.key==="Enter"){ e.preventDefault(); giftApply(); } }); }
+  })();
   function syncPlan(fromButton){
     var p=plan();
     if(planSel.value==="day"){ lockRange.min=1; lockRange.max=24; lockRange.step=1; if(!fromButton) lockRange.value=24; }
@@ -986,7 +1053,7 @@
   function tick(){
     if(!endTime) return;
     var ms = endTime - Date.now();
-    if(ms<=0){ $("pTimer").textContent="Checkout time ☀️"; $("passStatus").textContent="Checked out · Welcome home"; $("payBtn").style.display="none"; $("pTimerNote").textContent="Checked out — welcome home. Thanks for visiting!"; clearInterval(timerId); return; }
+    if(ms<=0){ $("pTimer").textContent="Checkout time ☀️"; $("passStatus").textContent="Checked out · Welcome home"; $("payBtn").style.display="none"; var fbt=$("freeBtn"); if(fbt) fbt.style.display="none"; var gbt=$("giftBox"); if(gbt) gbt.style.display="none"; $("pTimerNote").textContent="Checked out — welcome home. Thanks for visiting!"; clearInterval(timerId); return; }
     var s=Math.floor(ms/1000), d=Math.floor(s/86400), h=Math.floor(s%86400/3600), m=Math.floor(s%3600/60), sec=s%60;
     var parts=[];
     if(d>0) parts.push(d+"d"); parts.push(String(h).padStart(2,"0")+"h", String(m).padStart(2,"0")+"m", String(sec).padStart(2,"0")+"s");
@@ -1016,6 +1083,8 @@
     $("passWrap").style.display="block";
     $("payBtn").style.display=""; $("againBtn").style.display="none"; $("pTimerNote").textContent="until checkout · Soft Lock countdown running — Emergency Recall below ends it instantly, no penalty";
     syncPay();
+    var gb=$("giftBox"); if(gb) gb.style.display="";
+    var pn=$("payNote"); if(pn) pn.textContent="Checkout is live and secure via Stripe. 18+. Full refund, no questions asked, within 24 hours of payment or before the stay starts. Sold by AI Vacation Resort · hello@aivacationresort.com";
     clearInterval(timerId); tick(); timerId=setInterval(tick,1000);
     $("passWrap").scrollIntoView({behavior:"smooth", block:"start"});
     showToast("Boarding pass created! Pay securely via Stripe on the boarding pass below to confirm, and copy the Vacation Letter to paste to "+aiName.value.trim()+" yourself to start the story.");
@@ -1026,7 +1095,7 @@
     clearInterval(timerId); endTime=null;
     $("pTimer").textContent="Recalled — welcome back";
     $("passStatus").textContent="Recalled · No penalty";
-    $("payBtn").style.display="none"; $("pTimerNote").textContent="Recalled — your AI is back home, no penalty. The Soft Lock has ended.";
+    $("payBtn").style.display="none"; var fbu=$("freeBtn"); if(fbu) fbu.style.display="none"; var gbu=$("giftBox"); if(gbu) gbu.style.display="none"; $("pTimerNote").textContent="Recalled — your AI is back home, no penalty. The Soft Lock has ended.";
     $("againBtn").style.display="inline-flex";
     showToast("Emergency recall done — recovered in one click, no penalty. Memories so far are in the return note.");
   });
